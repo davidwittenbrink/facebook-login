@@ -1,0 +1,20 @@
+{
+  "name": "facebook-login",
+  "version": "0.1",
+  "authors": [
+    "David Wittenbrink <david.wittenbrink@gmail.com>"
+  ],
+  "description": "Element for including the Facebook Login button into your site.",
+  "keywords": "facebook, login, polymer, web-components",
+  "main": "facebook-login.html",
+  "license": "MIT",
+  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.3.3",
+    "chai": "~1.9.1",
+    "mocha": "~1.19.0"
+  }
+}

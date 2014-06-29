@@ -1,0 +1,165 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+Element for including the Facebook Login button into your site.
+After including the button the FB object is at a global scope and
+can be used for API calls.
+
+##### Example
+
+    <facebook-login appID="123456789"></facebook-login>
+
+@element facebook-login
+@blurb Element for including the Facebook Login button into your site.
+@status alpha
+@homepage http://polymerlabs.github.io/seed-element
+-->
+<polymer-element name="facebook-login" attributes="appID cookie xfbml version scope">
+
+  <template>
+    <div id='fb-login-container'>
+        <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="checkLoginState();" data-auto-logout-link="true"></fb:login-button>
+    </div>
+  </template>
+
+  <script>
+    (function(){
+
+        function forEach(array, fn) {
+            for(var i = 0; i < array.length; i++) {
+                fn(array[i]);
+            }
+        }
+
+        function checkLoginState() {
+            FB.getLoginStatus(function(response) {
+              statusChangeCallback(response);
+            });
+        }
+
+        function statusChangeCallback(response) {
+
+            if (response.status === 'connected') {
+              // Logged into app and Facebook.
+              handler.fire('facebook-signin-success', {response: response});
+            } else if (response.status === 'not_authorized') {
+              // The person is logged into Facebook, but not into the app.
+              handler.fire('facebook-signin-not-authorized', {response: response});
+            } else {
+              // The person is not logged into Facebook, so we're not sure if
+              // they are logged into this app or not.
+              console.log('User not logged into Facebook');
+            }
+        }
+
+        var FB_APP_ID = '';
+        var FB_APP_COOKIE = '';
+        var FB_APP_VERSION = '';
+        var FB_APP_XFBML;
+        var FB_APP_SCOPES = '';
+        var handler;
+
+        Polymer('facebook-login', {
+          /**
+           * The `appID` attribute is the app ID of your Facebook app. Create one at https://developers.facebook.com/apps/
+           * 
+           * @attribute appID
+           * @type string
+           */
+          appID: '',
+
+          /**
+           * The `cookie` attribute specifies whether you want to allow the server to access the session.
+           * 
+           * @attribute cookie
+           * @type bool
+           * default true
+           */
+          cookie: true,  
+          /**
+           * The `xfbml` attribute specifies whether social plugins on this page should be parsed.
+           * 
+           * @attribute xfbml
+           * @type bool
+           * default true
+           */
+          xfbml: true,
+          /**
+           * The `version` attribute specifies which FB API version should be used. Example 'v2.0'.
+           * 
+           * @attribute version
+           * @type string
+           * @default 'v2.0'
+           */
+          version: 'v2.0',
+          /**
+           * The scopes that you want access to.
+           * (see https://developers.facebook.com/docs/facebook-login/permissions/v2.0). Should be space delimited.
+           *
+           * @attribute scopes
+           * @type string
+           * @default 'public_profile'
+           */
+            scopes: 'public_profile',
+
+          ready: function() {
+            if(!this.appID) {
+                console.error("Missing attribute appID for Facebook Login Button");
+                return;
+            }
+            handler = this;
+            FB_APP_ID = this.appID;
+            FB_APP_COOKIE = this.cookie;
+            FB_APP_XFBML = this.xfbml;
+            FB_APP_VERSION = this.version;
+            FB_APP_SCOPES = this.scopes.split(' ').join(',');
+
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId      : FB_APP_ID,
+                    cookie     : FB_APP_COOKIE,
+                    xfbml      : FB_APP_XFBML,
+                    version    : FB_APP_VERSION
+                });
+
+                FB.getLoginStatus(function(response) {
+                    statusChangeCallback(response);
+                });
+
+                function forceButtonRendering(element){
+                    FB.XFBML.parse(element.shadowRoot.getElementById("fb-login-container"));
+                }
+
+                if(FB_APP_XFBML)
+                    forEach(document.getElementsByTagName('facebook-login'), forceButtonRendering);
+            };
+            if(typeof(FB) == 'undefined'){
+                (function(d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) return;
+                    js = d.createElement(s); js.id = id;
+                    js.src = "//connect.facebook.net/en_US/sdk.js";
+                    fjs.parentNode.insertBefore(js, fjs);
+
+                }(document, 'script', 'facebook-jssdk'));
+            }
+         },
+
+          /**
+           * The `facebook-signin-success` event is fired whenever a
+           * signs in successfully.
+           * 
+           * @event facebook-signin-success
+           */
+
+          /**
+           * The `facebook-signin-not-authorized` event is fired whenever a
+           * user is signed into Facebook but not into your app.
+           * 
+           * @event facebook-signin-not-authorized
+           */        
+        });
+    }());
+  </script>
+
+</polymer-element>
