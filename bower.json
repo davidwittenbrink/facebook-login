@@ -8,7 +8,7 @@
   "keywords": "facebook, login, polymer, web-components",
   "main": "facebook-login.html",
   "license": "MIT",
-  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "homepage": "http://davidwittenbrink.github.io/facebook-login",
   "ignore": [
     "**/.*"
   ],
