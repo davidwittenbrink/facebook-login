@@ -54,7 +54,6 @@ can be used for API calls.
         var FB_APP_COOKIE = '';
         var FB_APP_VERSION = '';
         var FB_APP_XFBML;
-        var FB_APP_SCOPES = '';
         var handler;
 
         Polymer('facebook-login', {
@@ -110,7 +109,7 @@ can be used for API calls.
             FB_APP_COOKIE = this.cookie;
             FB_APP_XFBML = this.xfbml;
             FB_APP_VERSION = this.version;
-            FB_APP_SCOPES = this.scopes.split(' ').join(',');
+            handler.FB_APP_SCOPES = this.scopes.split(' ').join(',');
 
             window.fbAsyncInit = function() {
                 FB.init({
