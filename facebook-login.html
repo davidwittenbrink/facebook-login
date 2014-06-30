@@ -18,11 +18,13 @@ can be used for API calls.
 
   <template>
     <div id='fb-login-container'>
-        <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="checkLoginState();" data-auto-logout-link="true"></fb:login-button>
+        <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="FB.customCheckLoginState();" data-auto-logout-link="true"></fb:login-button>
     </div>
   </template>
 
   <script>
+    
+
     (function(){
 
         function forEach(array, fn) {
@@ -30,13 +32,9 @@ can be used for API calls.
                 fn(array[i]);
             }
         }
-
-        function checkLoginState() {
-            FB.getLoginStatus(function(response) {
-              statusChangeCallback(response);
-            });
-        }
-
+        
+        
+        
         function statusChangeCallback(response) {
 
             if (response.status === 'connected') {
@@ -132,6 +130,12 @@ can be used for API calls.
 
                 if(FB_APP_XFBML)
                     forEach(document.getElementsByTagName('facebook-login'), forceButtonRendering);
+                
+                FB.customCheckLoginState = function() {
+                    FB.getLoginStatus(function(response) {
+                        statusChangeCallback(response);
+                    });
+                };
             };
             if(typeof(FB) == 'undefined'){
                 (function(d, s, id) {
