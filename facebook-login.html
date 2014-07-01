@@ -17,6 +17,11 @@ can be used for API calls.
 <polymer-element name="facebook-login" attributes="appID cookie xfbml version scopes">
 
   <template>
+    <style>
+        :host {
+            display: inline-block;
+        }
+    </style>
     <div id='fb-login-container'>
         <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="FB.customCheckLoginState();" data-auto-logout-link="true"></fb:login-button>
     </div>
