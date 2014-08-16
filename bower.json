@@ -1,10 +1,10 @@
 {
   "name": "facebook-login",
-  "version": "0.2.3",
+  "version": "0.3",
   "authors": [
     "David Wittenbrink <david.wittenbrink@gmail.com>"
   ],
-  "description": "Element for including the Facebook Login button into your site.",
+  "description": "Element that includes the Facebook Login button into your site and enables Graph API calls.",
   "keywords": "facebook, login, polymer, web-components",
   "main": "facebook-login.html",
   "license": "MIT",
