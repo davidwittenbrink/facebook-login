@@ -155,13 +155,15 @@ can be used for API calls.
         */
         go: function(params, method) {
           
-          if(!this.graphURL)
+          if(this.graphURL == '') {
             console.error("No URL specified. Specify the graph API URL using the graphURL attribute.");
+            return;
+          }
 
           FB.api(this.graphURL, this.graphMethod, this.graphParams, function(response) {
             this.graphResponse = response;
             handler.fire('graph-api-response', {response: response});
-          });
+          }.bind(this));
         },
 
         ready: function() {

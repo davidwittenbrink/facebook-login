@@ -1,6 +1,6 @@
 {
   "name": "facebook-login",
-  "version": "0.3",
+  "version": "0.3.1",
   "authors": [
     "David Wittenbrink <david.wittenbrink@gmail.com>"
   ],
@@ -13,7 +13,7 @@
     "**/.*"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.4.1",
+    "polymer": "Polymer/polymer#master",
     "chai": "~1.9.1",
     "mocha": "~1.19.0"
   }
