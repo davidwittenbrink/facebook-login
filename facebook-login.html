@@ -14,274 +14,279 @@ can be used for API calls.
 @status alpha
 @homepage http://davidwittenbrink.github.io/facebook-login
 -->
-<dom-module id="facebook-login">
-
-    <template>
-        <style>
-            :host {
-                display: inline-block;
-            }
-        </style>
-        <div id='fb-login-container'>
-            <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="FB.customCheckLoginState();" data-auto-logout-link="true">
-                {{ buttonText }}
-            </fb:login-button>
-        </div>
-    </template>
-
-    <script>
-        function statusChangeCallback(response) {
-
-            if (response.status === 'connected') {
-                // Logged into app and Facebook.
-                handler.fire('facebook-signin-success', {response: response});
-            } else if (response.status === 'not_authorized') {
-                // The person is logged into Facebook, but not into the app.
-                handler.fire('facebook-signin-not-authorized', {response: response});
-            } else {
-                // The person is not logged into Facebook, so we're not sure if
-                // they are logged into this app or not.
-                console.log('User not logged into Facebook');
-            }
+<dom-module id="facebook-login"> <template>
+    <style>
+        :host {
+            display: inline-block;
         }
+    </style>
+    <div id='fb-login-container'>
+        <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="FB.customCheckLoginState();" data-auto-logout-link="true">
+            {{buttonText}}
+        </fb:login-button>
+    </div>
+</template> <script>
+    function statusChangeCallback(response) {
 
-        var FB_APP_ID = '';
-        var FB_APP_COOKIE = '';
-        var FB_APP_VERSION = '';
-        var FB_APP_XFBML;
-        var handler;
-        Polymer({
-            is:'facebook-login',
-            properties: {
-                /**
-                 * The `appId` attribute is the app ID of your Facebook app. Create one at https://developers.facebook.com/apps/
-                 *
-                 * @attribute appId
-                 * @type string
-                 */
-                appId: {
-                    type: String,
-                    value: ''
-                },
-                /**
-                 * The `cookie` attribute specifies whether you want to allow the server to access the session.
-                 *
-                 * @attribute cookie
-                 * @type bool
-                 * default true
-                 */
-                cookie: {
-                    type: Boolean,
-                    value: true
-                },
-                /**
-                 * The `version` attribute specifies which FB API version should be used. Example 'v2.0'.
-                 *
-                 * @attribute version
-                 * @type string
-                 * @default 'v2.0'
-                 */
-                version: {
-                    type: String,
-                    value: 'v2.0'
-                },
-                /**
-                 * The scopes that you want access to.
-                 * (see https://developers.facebook.com/docs/facebook-login/permissions/v2.0). Should be space delimited.
-                 *
-                 * @attribute scopes
-                 * @type string
-                 * @default 'public_profile'
-                 */
-                scopes: {
-                    type: String,
-                    value: 'public_profile'
-                },
-                /**
-                 * The text you want to display inside of the button.
-                 *
-                 *
-                 * @attribute buttonText
-                 * @type string
-                 * @default ''
-                 */
-                buttonText: {
-                    type: String,
-                    value: ''
-                },
+        if (response.status === 'connected') {
+            // Logged into app and Facebook.
+            handler.fire('facebook-signin-success', {
+                response : response
+            });
+        } else if (response.status === 'not_authorized') {
+            // The person is logged into Facebook, but not into the app.
+            handler.fire('facebook-signin-not-authorized', {
+                response : response
+            });
+        } else {
+            // The person is not logged into Facebook, so we're not sure if
+            // they are logged into this app or not.
+            console.log('User not logged into Facebook');
+        }
+    }
 
-                /**
-                 * The Graph API URL you want to access.
-                 *
-                 *
-                 * @attribute graphURL
-                 * @type string
-                 * @default ''
-                 */
-                graphURL: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * The returned response of an API call.
-                 *
-                 *
-                 * @attribute graphResponse
-                 * @type Object
-                 * @default null
-                 */
-                graphResponse: {
-                    type: Object,
-                    value: null
-                },
-
-                /**
-                 * The params sent to the Graph API.
-                 *
-                 *
-                 * @attribute graphParams
-                 * @type Object
-                 * @default {}
-                 */
-                graphParams: {
-                    type: Object,
-                    value: {}
-                },
-
-                /**
-                 * The HTTP method used for Graph API calls.
-                 *
-                 *
-                 * @attribute graphMethod
-                 * @type string
-                 * @default 'get'
-                 */
-                graphMethod: {
-                    type: String,
-                    value: 'get'
-                },
-
-                /**
-                 * If set, the element will make an automatic API call whenenver the graphURL or graphParams attribute changes.
-                 *
-                 * @attribute autoAPICall
-                 * @type boolean
-                 * @default false
-                 */
-                autoAPICall: {
-                    type: Boolean,
-                    value: false
-                },
-                /**
-                 * The `xfbml` attribute specifies which FB API determines whether XFBML tags
-                 * used by social plugins are parsed, and therefore whether the plugins are rendered or not.
-                 *
-                 * @attribute xfbml
-                 * @type boolean
-                 * @default true
-                 */
-                xfbml: {
-                    type: Boolean,
-                    value: true
-                }
+    var FB_APP_ID = '';
+    var FB_APP_COOKIE = '';
+    var FB_APP_VERSION = '';
+    var FB_APP_XFBML;
+    var handler;
+    Polymer({
+        is : 'facebook-login',
+        properties : {
+            /**
+             * The `appId` attribute is the app ID of your Facebook app. Create one at https://developers.facebook.com/apps/
+             *
+             * @attribute appId
+             * @type string
+             */
+            appId : {
+                type : String,
+                value : ''
             },
             /**
-             * The 'go' method initiates an API call to the URL specified by the attribute 'graphURL'.
+             * The `cookie` attribute specifies whether you want to allow the server to access the session.
              *
-             * @method go
+             * @attribute cookie
+             * @type bool
+             * default true
              */
-            go: function(params, method) {
-
-                if(this.graphURL == '') {
-                    console.error("No URL specified. Specify the graph API URL using the graphURL attribute.");
-                    return;
-                }
-
-                FB.api(this.graphURL, this.graphMethod, this.graphParams, function(response) {
-                    this.graphResponse = response;
-                    handler.fire('graph-api-response', {response: response});
-                }.bind(this));
+            cookie : {
+                type : Boolean,
+                value : true
+            },
+            /**
+             * The `version` attribute specifies which FB API version should be used. Example 'v2.0'.
+             *
+             * @attribute version
+             * @type string
+             * @default 'v2.0'
+             */
+            version : {
+                type : String,
+                value : 'v2.0'
+            },
+            /**
+             * The scopes that you want access to.
+             * (see https://developers.facebook.com/docs/facebook-login/permissions/v2.0). Should be space delimited.
+             *
+             * @attribute scopes
+             * @type string
+             * @default 'public_profile'
+             */
+            scopes : {
+                type : String,
+                value : 'public_profile'
+            },
+            /**
+             * The text you want to display inside of the button.
+             *
+             *
+             * @attribute buttonText
+             * @type string
+             * @default ''
+             */
+            buttonText : {
+                type : String,
+                value : ''
             },
 
-            ready: function() {
-                console.log(this.appId, this.version);
-                if(!this.appId) {
-                    console.error("Missing attribute appId for Facebook Login Button");
-                    return;
-                }
+            /**
+             * The Graph API URL you want to access.
+             *
+             *
+             * @attribute graphURL
+             * @type string
+             * @default ''
+             */
+            graphURL : {
+                type : String,
+                value : ''
+            },
 
-                handler = this;
-                FB_APP_ID = this.appId;
-                FB_APP_COOKIE = this.cookie;
-                FB_APP_XFBML = this.xfbml;
-                FB_APP_VERSION = 'v'+this.version;
-                handler.FB_APP_SCOPES = this.scopes.split(' ').join(',');
+            /**
+             * The returned response of an API call.
+             *
+             *
+             * @attribute graphResponse
+             * @type Object
+             * @default null
+             */
+            graphResponse : {
+                type : Object,
+                value : null
+            },
 
-                var container = this.$['fb-login-container'];
+            /**
+             * The params sent to the Graph API.
+             *
+             *
+             * @attribute graphParams
+             * @type Object
+             * @default {}
+             */
+            graphParams : {
+                type : Object,
+                value : {}
+            },
 
-                window.fbAsyncInit = function() {
-                    FB.init({
-                        appId      : FB_APP_ID,
-                        cookie     : FB_APP_COOKIE,
-                        xfbml      : FB_APP_XFBML,
-                        version    : FB_APP_VERSION
-                    });
+            /**
+             * The HTTP method used for Graph API calls.
+             *
+             *
+             * @attribute graphMethod
+             * @type string
+             * @default 'get'
+             */
+            graphMethod : {
+                type : String,
+                value : 'get'
+            },
 
+            /**
+             * If set, the element will make an automatic API call whenenver the graphURL or graphParams attribute changes.
+             *
+             * @attribute autoAPICall
+             * @type boolean
+             * @default false
+             */
+            autoAPICall : {
+                type : Boolean,
+                value : false
+            },
+            /**
+             * The `xfbml` attribute specifies which FB API determines whether XFBML tags
+             * used by social plugins are parsed, and therefore whether the plugins are rendered or not.
+             *
+             * @attribute xfbml
+             * @type boolean
+             * @default true
+             */
+            xfbml : {
+                type : Boolean,
+                value : true
+            }
+        },
+        /**
+         * The 'go' method initiates an API call to the URL specified by the attribute 'graphURL'.
+         *
+         * @method go
+         */
+        go : function(params, method) {
+
+            if (this.graphURL == '') {
+                console
+                        .error("No URL specified. Specify the graph API URL using the graphURL attribute.");
+                return;
+            }
+
+            FB.api(this.graphURL, this.graphMethod, this.graphParams, function(
+                    response) {
+                this.graphResponse = response;
+                handler.fire('graph-api-response', {
+                    response : response
+                });
+            }.bind(this));
+        },
+
+        ready : function() {
+            console.log(this.appId, this.version);
+            if (!this.appId) {
+                console.error("Missing attribute appId for Facebook Login Button");
+                return;
+            }
+
+            handler = this;
+            FB_APP_ID = this.appId;
+            FB_APP_COOKIE = this.cookie;
+            FB_APP_XFBML = this.xfbml;
+            FB_APP_VERSION = 'v' + this.version;
+            handler.FB_APP_SCOPES = this.scopes.split(' ').join(',');
+
+            var container = this.$['fb-login-container'];
+
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId : FB_APP_ID,
+                    cookie : FB_APP_COOKIE,
+                    xfbml : FB_APP_XFBML,
+                    version : FB_APP_VERSION
+                });
+
+                FB.getLoginStatus(function(response) {
+                    statusChangeCallback(response);
+                });
+
+                FB.XFBML.parse(container);
+
+                FB.customCheckLoginState = function() {
                     FB.getLoginStatus(function(response) {
                         statusChangeCallback(response);
                     });
-
-                    FB.XFBML.parse(container);
-
-                    FB.customCheckLoginState = function() {
-                        FB.getLoginStatus(function(response) {
-                            statusChangeCallback(response);
-                        });
-                    };
                 };
+            };
 
-                if(typeof(FB) == 'undefined') {
-                    (function(d, s, id) {
-                        var js, fjs = d.getElementsByTagName(s)[0];
-                        if (d.getElementById(id)) return;
-                        js = d.createElement(s); js.id = id;
-                        js.src = "//connect.facebook.net/en_US/sdk.js";
-                        fjs.parentNode.insertBefore(js, fjs);
+            if (typeof (FB) == 'undefined') {
+                (function(d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id))
+                        return;
+                    js = d.createElement(s);
+                    js.id = id;
+                    js.src = "//connect.facebook.net/en_US/sdk.js";
+                    fjs.parentNode.insertBefore(js, fjs);
 
-                    }(document, 'script', 'facebook-jssdk'));
-                }
-            },
+                }(document, 'script', 'facebook-jssdk'));
+            }
+        },
 
-            graphURLChanged: function () {
-                if(this.autoAPICall) this.go();
-            },
-            graphParamsChanged: function () {
-                if(this.autoAPICall) this.go();
-            },
+        graphURLChanged : function() {
+            if (this.autoAPICall)
+                this.go();
+        },
+        graphParamsChanged : function() {
+            if (this.autoAPICall)
+                this.go();
+        },
 
+        /**
+         * The `facebook-signin-success` event is fired whenever a
+         * signs in successfully.
+         *
+         * @event facebook-signin-success
+         */
 
-            /**
-             * The `facebook-signin-success` event is fired whenever a
-             * signs in successfully.
-             *
-             * @event facebook-signin-success
-             */
+        /**
+         * The `facebook-signin-not-authorized` event is fired whenever a
+         * user is signed into Facebook but not into your app.
+         *
+         * @event facebook-signin-not-authorized
+         */
 
-            /**
-             * The `facebook-signin-not-authorized` event is fired whenever a
-             * user is signed into Facebook but not into your app.
-             *
-             * @event facebook-signin-not-authorized
-             */
+        /**
+         * The `graph-api-response` event is fired when a response from an API call occurs.
+         *
+         * @event graph-api-response
+         */
 
-            /**
-             * The `graph-api-response` event is fired when a response from an API call occurs.
-             *
-             * @event graph-api-response
-             */
-
-        });
-    </script>
-
-</dom-module>
+    });
+</script> </dom-module>
