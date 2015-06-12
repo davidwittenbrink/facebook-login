@@ -14,7 +14,7 @@ can be used for API calls.
 @status alpha
 @homepage http://davidwittenbrink.github.io/facebook-login
 -->
-<polymer-element name="facebook-login" attributes="appID cookie version scopes buttonText graphURL graphResponse autoAPICall graphParams">
+<dom-module id="facebook-login">
 
   <template>
     <style>
@@ -55,99 +55,100 @@ can be used for API calls.
       var FB_APP_XFBML;
       var handler;
 
-      Polymer('facebook-login', {
-        /**
-         * The `appID` attribute is the app ID of your Facebook app. Create one at https://developers.facebook.com/apps/
-         * 
-         * @attribute appID
-         * @type string
-         */
-        appID: '',
+      Polymer({
+          is:'facebook-login',
+          properties: {
+              /**
+               * The `appID` attribute is the app ID of your Facebook app. Create one at https://developers.facebook.com/apps/
+               *
+               * @attribute appID
+               * @type string
+               */
+              appID: '',
+              /**
+               * The `cookie` attribute specifies whether you want to allow the server to access the session.
+               *
+               * @attribute cookie
+               * @type bool
+               * default true
+               */
+              cookie: true,
+              /**
+               * The `version` attribute specifies which FB API version should be used. Example 'v2.0'.
+               *
+               * @attribute version
+               * @type string
+               * @default 'v2.0'
+               */
+              version: 'v2.0',
+              /**
+               * The scopes that you want access to.
+               * (see https://developers.facebook.com/docs/facebook-login/permissions/v2.0). Should be space delimited.
+               *
+               * @attribute scopes
+               * @type string
+               * @default 'public_profile'
+               */
+              scopes: 'public_profile',
+              /**
+               * The text you want to display inside of the button.
+               *
+               *
+               * @attribute buttonText
+               * @type string
+               * @default ''
+               */
+              buttonText: '',
 
-        /**
-         * The `cookie` attribute specifies whether you want to allow the server to access the session.
-         * 
-         * @attribute cookie
-         * @type bool
-         * default true
-         */
-        cookie: true,
-        /**
-         * The `version` attribute specifies which FB API version should be used. Example 'v2.0'.
-         * 
-         * @attribute version
-         * @type string
-         * @default 'v2.0'
-         */
-        version: 'v2.0',
-        /**
-         * The scopes that you want access to.
-         * (see https://developers.facebook.com/docs/facebook-login/permissions/v2.0). Should be space delimited.
-         *
-         * @attribute scopes
-         * @type string
-         * @default 'public_profile'
-         */
-        scopes: 'public_profile',
-        /**
-         * The text you want to display inside of the button.
-         * 
-         *
-         * @attribute buttonText
-         * @type string
-         * @default ''
-         */
-        buttonText: '',
+              /**
+               * The Graph API URL you want to access.
+               *
+               *
+               * @attribute graphURL
+               * @type string
+               * @default ''
+               */
+              graphURL: '',
 
-        /**
-         * The Graph API URL you want to access.
-         * 
-         *
-         * @attribute graphURL
-         * @type string
-         * @default ''
-         */
-        graphURL: '',
+              /**
+               * The returned response of an API call.
+               *
+               *
+               * @attribute graphResponse
+               * @type Object
+               * @default null
+               */
+              graphResponse: null,
 
-        /**
-         * The returned response of an API call.
-         * 
-         *
-         * @attribute graphResponse
-         * @type Object
-         * @default null
-         */
-        graphResponse: null,
+              /**
+               * The params sent to the Graph API.
+               *
+               *
+               * @attribute graphParams
+               * @type Object
+               * @default {}
+               */
+              graphParams: {},
 
-        /**
-         * The params sent to the Graph API.
-         * 
-         *
-         * @attribute graphParams
-         * @type Object
-         * @default {}
-         */
-        graphParams: {},
+              /**
+               * The HTTP method used for Graph API calls.
+               *
+               *
+               * @attribute graphMethod
+               * @type string
+               * @default 'get'
+               */
+              graphMethod: 'get',
 
-        /**
-         * The HTTP method used for Graph API calls.
-         * 
-         *
-         * @attribute graphMethod
-         * @type string
-         * @default 'get'
-         */
-        graphMethod: 'get',
-
-        /**
-         * If set, the element will make an automatic API call whenenver the graphURL or graphParams attribute changes.
-         *
-         * @attribute autoAPICall
-         * @type boolean
-         * @default false
-         */
-        autoAPICall: false,
-
+              /**
+               * If set, the element will make an automatic API call whenenver the graphURL or graphParams attribute changes.
+               *
+               * @attribute autoAPICall
+               * @type boolean
+               * @default false
+               */
+              autoAPICall: false,
+          },
         /**
         * The 'go' method initiates an API call to the URL specified by the attribute 'graphURL'.
         * 
@@ -246,4 +247,4 @@ can be used for API calls.
     }());
   </script>
 
-</polymer-element>
+</dom-module>
