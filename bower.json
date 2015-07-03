@@ -17,6 +17,7 @@
   },
   "devDependencies": {
 	"chai": "~1.9.1",
-	"mocha": "~1.19.0"
+	"mocha": "~1.19.0",
+	"iron-component-page":"polymerelements/iron-component-page#master"
   }
 }
