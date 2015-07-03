@@ -23,7 +23,7 @@ can be used for API calls.
       }
     </style>
     <div id='fb-login-container'>
-        <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="FB.customCheckLoginState();" data-auto-logout-link="true">{{buttonText}}</fb:login-button>
+        <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="FB.customCheckLoginState();" data-auto-logout-link="{{logoutLink}}">{{buttonText}}</fb:login-button>
     </div>
   </template>
 
@@ -52,6 +52,10 @@ can be used for API calls.
       Polymer({
       	is:'facebook-login',
       	properties: {
+      	/**
+      	 *
+      	*/
+      	logoutLink: {type:Boolean,notify:false,value:false},
 
         /**
          * The `appID` attribute is the app ID of your Facebook app. Create one at https://developers.facebook.com/apps/
