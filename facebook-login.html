@@ -7,14 +7,14 @@ can be used for API calls.
 
 ##### Example
 
-    <facebook-login appID="123456789"></facebook-login>
+    <facebook-login appid="123456789"></facebook-login>
 
 @element facebook-login
 @blurb Element that includes the Facebook Login button into your site and enables Graph API calls.
 @status alpha
 @homepage http://davidwittenbrink.github.io/facebook-login
 -->
-<polymer-element name="facebook-login" attributes="appID cookie version scopes buttonText graphURL graphResponse autoAPICall graphParams">
+<dom-module id="facebook-login">
 
   <template>
     <style>
@@ -23,31 +23,25 @@ can be used for API calls.
       }
     </style>
     <div id='fb-login-container'>
-        <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="FB.customCheckLoginState();" data-auto-logout-link="true">
-        {{ buttonText }}
-        </fb:login-button>
+        <fb:login-button scope="{{FB_APP_SCOPES}}" onlogin="FB.customCheckLoginState();" data-auto-logout-link="true">{{buttonText}}</fb:login-button>
     </div>
   </template>
 
   <script>
-    
 
-    (function(){
-
-      function statusChangeCallback(response) {
-
-        if (response.status === 'connected') {
-          // Logged into app and Facebook.
-          handler.fire('facebook-signin-success', {response: response});
-        } else if (response.status === 'not_authorized') {
-          // The person is logged into Facebook, but not into the app.
-          handler.fire('facebook-signin-not-authorized', {response: response});
-        } else {
-          // The person is not logged into Facebook, so we're not sure if
-          // they are logged into this app or not.
-          console.log('User not logged into Facebook');
-        }
-      }
+	function statusChangeCallback(response) {
+		if (response.status === 'connected') {
+		  // Logged into app and Facebook.
+		  handler.fire('facebook-signin-success', {response: response});
+		} else if (response.status === 'not_authorized') {
+		  // The person is logged into Facebook, but not into the app.
+		  handler.fire('facebook-signin-not-authorized', {response: response});
+		} else {
+		  // The person is not logged into Facebook, so we're not sure if
+		  // they are logged into this app or not.
+		  handler.fire('facebook-signin-not-logged', {response: response});
+		}
+	}
 
       var FB_APP_ID = '';
       var FB_APP_COOKIE = '';
@@ -55,125 +49,129 @@ can be used for API calls.
       var FB_APP_XFBML;
       var handler;
 
-      Polymer('facebook-login', {
+      Polymer({
+      	is:'facebook-login',
+      	properties: {
+
         /**
          * The `appID` attribute is the app ID of your Facebook app. Create one at https://developers.facebook.com/apps/
-         * 
+         *
          * @attribute appID
          * @type string
          */
-        appID: '',
+        appid: {type:String,notify:false,value:""},
 
         /**
          * The `cookie` attribute specifies whether you want to allow the server to access the session.
-         * 
+         *
          * @attribute cookie
          * @type bool
          * default true
          */
-        cookie: true,
+        cookie: {type:Boolean,notify:false,value:true},
         /**
          * The `version` attribute specifies which FB API version should be used. Example 'v2.0'.
-         * 
+         *
          * @attribute version
          * @type string
-         * @default 'v2.0'
+         * @default 'v2.3'
          */
-        version: 'v2.0',
+        version: {type:String,notify:false,value:'v2.3'},
         /**
          * The scopes that you want access to.
-         * (see https://developers.facebook.com/docs/facebook-login/permissions/v2.0). Should be space delimited.
+         * (see https://developers.facebook.com/docs/facebook-login/permissions/v2.3). Should be space delimited.
          *
          * @attribute scopes
          * @type string
          * @default 'public_profile'
          */
-        scopes: 'public_profile',
+        scopes: {type:String,notify:false,value:'public_profile'},
         /**
          * The text you want to display inside of the button.
-         * 
          *
-         * @attribute buttonText
+         *
+         * @attribute button-text
          * @type string
          * @default ''
          */
-        buttonText: '',
+        buttonText: {type:String,value:''},
 
         /**
          * The Graph API URL you want to access.
-         * 
          *
-         * @attribute graphURL
+         *
+         * @attribute graph-url
          * @type string
          * @default ''
          */
-        graphURL: '',
+        graphUrl: {type:String,value:''},
 
         /**
          * The returned response of an API call.
-         * 
          *
-         * @attribute graphResponse
+         *
+         * @attribute graph-response
          * @type Object
          * @default null
          */
-        graphResponse: null,
+        graphResponse: {type:Object,value:null},
 
         /**
          * The params sent to the Graph API.
-         * 
          *
-         * @attribute graphParams
+         *
+         * @attribute graph-params
          * @type Object
          * @default {}
          */
-        graphParams: {},
+        graphParams: {type:Object,value:{}},
 
         /**
          * The HTTP method used for Graph API calls.
-         * 
          *
-         * @attribute graphMethod
+         *
+         * @attribute graph-method
          * @type string
          * @default 'get'
          */
-        graphMethod: 'get',
+        graphMethod: {type:String,notify:false,value:'get'},
 
         /**
          * If set, the element will make an automatic API call whenenver the graphURL or graphParams attribute changes.
          *
-         * @attribute autoAPICall
+         * @attribute auto-api-call
          * @type boolean
          * @default false
          */
-        autoAPICall: false,
+        autoApiCall: {type:Boolean,value:false},
+      	},
 
         /**
         * The 'go' method initiates an API call to the URL specified by the attribute 'graphURL'.
-        * 
+        *
         * @method go
         */
         go: function(params, method) {
-          
-          if(this.graphURL == '') {
+
+          if(this.graphUrl == '') {
             console.error("No URL specified. Specify the graph API URL using the graphURL attribute.");
             return;
           }
 
-          FB.api(this.graphURL, this.graphMethod, this.graphParams, function(response) {
+          FB.api(this.graphUrl, this.graphMethod, this.graphParams, function(response) {
             this.graphResponse = response;
             handler.fire('graph-api-response', {response: response});
           }.bind(this));
         },
 
         ready: function() {
-          if(!this.appID) {
+          if(!this.appid) {
               console.error("Missing attribute appID for Facebook Login Button");
               return;
           }
 
           handler = this;
-          FB_APP_ID = this.appID;
+          FB_APP_ID = this.appid;
           FB_APP_COOKIE = this.cookie;
           FB_APP_XFBML = this.xfbml;
           FB_APP_VERSION = this.version;
@@ -194,7 +192,7 @@ can be used for API calls.
               });
 
               FB.XFBML.parse(container);
-              
+
               FB.customCheckLoginState = function() {
                   FB.getLoginStatus(function(response) {
                       statusChangeCallback(response);
@@ -225,25 +223,31 @@ can be used for API calls.
         /**
          * The `facebook-signin-success` event is fired whenever a
          * signs in successfully.
-         * 
+         *
          * @event facebook-signin-success
          */
 
         /**
          * The `facebook-signin-not-authorized` event is fired whenever a
          * user is signed into Facebook but not into your app.
-         * 
+         *
          * @event facebook-signin-not-authorized
+         */
+
+        /**
+         * The `facebook-signin-not-logged` event is fired whenever a
+         * user is not sigin
+         *
+         * @event facebook-signin-not-logged
          */
 
          /**
          * The `graph-api-response` event is fired when a response from an API call occurs.
-         * 
+         *
          * @event graph-api-response
          */
 
       });
-    }());
   </script>
 
-</polymer-element>
+</dom-module>
