@@ -23,13 +23,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template is="dom-bind">
 
     <facebook-login
-        appID="743333545708443"
+        appID="373038132822841"
         logout-link graph-url="me?fields=name,email,birthday"
         scope="public_profile email user_birthday"
         graph-response="{{resp}}"
         auto-api-call></facebook-login>
 
-    <template is="dom-if" if="{{!resp.name}}">Sign into your Facebook account to see your info!</template>
+    <template is="dom-if" if="{{!resp.name}}">
+      <div>Sign into your Facebook account to see your info!</div>
+    </template>
     
     <div style="margin-top: 20px">
       <span>[[resp.name]]</span>
