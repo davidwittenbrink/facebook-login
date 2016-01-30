@@ -48,7 +48,7 @@ gulp.task('vulcanize', function () {
     .pipe(vulcanize({
         abspath: '',
         excludes: ["../polymer/polymer.html"],
-        stripExcludes: true,
+        stripExcludes: false,
         inlineScripts: true,
         inlineCss: true
   }))
@@ -85,7 +85,7 @@ gulp.task('serve', ['default'], function() {
     //       will present a certificate warning in the browser.
     // https: true,
     server: {
-      baseDir: ['.tmp', 'demo'],
+      baseDir: ['demo'],
       middleware: [historyApiFallback()],
       routes: {
         '/dist': 'dist',
