@@ -1,0 +1,348 @@
+<html><head><meta charset="UTF-8">
+    <link rel="import" href="../../polymer/polymer.html">
+
+    <!--
+      Element for including the Facebook Login button into your site.
+      After including the button the FB object is at a global scope and
+      can be used for API calls.
+      _Make sure you import the facebook-login.html from
+      the dist folder as the other one is written in EcmaScript 6._
+
+      ##### Example
+
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+              <title>facebook-login Demo</title>
+              <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+              <link rel="import" href="../dist/facebook-login.html">
+            </head>
+            <body unresolved>
+
+              <p>An example of using <code>&lt;facebook-login></code>:</p>
+
+              <template is="dom-bind">
+
+                <facebook-login
+                    appID="743333545708443"
+                    logout-link graph-url="me?fields=name,email,birthday"
+                    scope="public_profile email user_birthday"
+                    graph-response="{{resp}}"
+                    auto-api-call></facebook-login>
+
+                <div style="margin-top: 20px">
+                  <span>[[resp.name]]</span>
+                  <div>[[resp.email]]</div>
+                  <div>[[resp.birthday]]</div>
+                </div>
+
+              </template>
+
+            </body>
+          </html>
+
+      @element facebook-login
+      @demo demo/index.html
+      @hero hero.svg
+      -->
+  </head>
+  <body>
+    <dom-module id="facebook-login">
+      <template>
+        <style>
+          :host {
+          display: inline-block;
+          }
+        </style>
+        <div id="fb-login-container">
+        </div>
+      </template>
+    </dom-module>
+    <script>'use strict';
+
+Polymer({
+  is: 'facebook-login',
+  properties: {
+
+    /**
+     * Whether to also act as a logout button.
+     */
+    logoutLink: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * The app ID of your Facebook app. Create one at https://developers.facebook.com/apps/
+     */
+    appid: {
+      type: String,
+      value: ""
+    },
+
+    /**
+     * The language of the button.
+     */
+    language: {
+      type: String,
+      value: 'en_US'
+    },
+
+    /**
+     * Whether you want to set a cookie in order to allow the server to access the session.
+     */
+    cookie: {
+      type: Boolean,
+      value: true
+    },
+
+    /**
+     * The `version` attribute specifies which FB API version should be used. Example 'v2.4'.
+     */
+    version: {
+      type: String,
+      value: 'v2.5'
+    },
+
+    /**
+     * The scope that you want access to.
+     * (see https://developers.facebook.com/docs/facebook-login/permissions/v2.3). Should be space delimited.
+     */
+    scope: {
+      type: String,
+      value: 'basic_info'
+    },
+
+    /**
+     * The size of the button. ['icon', 'small', 'medium', 'large', 'xlarge']
+     */
+    buttonSize: {
+      type: String,
+      value: 'small'
+    },
+
+    /**
+     * Whether to show friends' pictures beneath the button.
+     */
+    friends: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Whether to show friends' pictures beneath the button.
+     */
+    maxRows: {
+      type: String,
+      value: '1'
+    },
+
+    /**
+     * The Graph API URL you want to access.
+     */
+    graphUrl: {
+      type: String,
+      value: '',
+      observer: "_sendAutoApiRequest"
+    },
+
+    /**
+     * The returned response of an API call.
+     */
+    graphResponse: {
+      type: Object,
+      value: {},
+      notify: true
+    },
+
+    /**
+     * The params sent to the Graph API.
+     */
+    graphParams: {
+      type: Object,
+      value: {},
+      observer: "_sendAutoApiRequest"
+    },
+
+    /**
+     * The HTTP method used for Graph API calls.
+     */
+    graphMethod: {
+      type: String,
+      value: 'get'
+    },
+
+    /**
+     * If set, the element will make an automatic API call whenenver the graphUrl property changes.
+     */
+    autoApiCall: {
+      type: Boolean,
+      value: false
+    },
+
+    _commaDelimittedAppScope: String,
+
+    _ready: {
+      type: Boolean,
+      value: false
+    },
+
+    _changeListenerEnabled: {
+      type: Boolean,
+      value: false
+    }
+
+  },
+
+  /**
+   * The 'go' method initiates an API call to the URL specified by the property 'graphUrl'.
+   *
+   * @method go
+   */
+  go: function go() {
+    var _this = this;
+
+    if (this.graphUrl === '') {
+      console.error("No URL specified. Specify the graph API URL using the graphURL attribute.");
+      return;
+    }
+
+    if (!this._ready) {
+      console.error("The Facebook SDK is not ready yet.");
+      return;
+    }
+
+    FB.api(this.graphUrl, this.graphMethod, this.graphParams, function (response) {
+      _this.graphResponse = response;
+      _this.fire('graph-response', {
+        response: response
+      });
+    });
+  },
+  ready: function ready() {
+    var _this2 = this;
+
+    if (!this.appid) {
+      console.error("Missing attribute appid for Facebook Login Button");
+      return;
+    }
+
+    this._commaDelimittedAppScope = this.scope.split(' ').join(',');
+
+    var fbButton = document.createElement('div');
+    fbButton.className = "fb-login-button";
+    fbButton.setAttribute("onlogin", "FB.customCheckLoginState();");
+    fbButton.setAttribute("data-scope", this._commaDelimittedAppScope);
+    fbButton.setAttribute("data-size", this.buttonSize);
+    fbButton.setAttribute("data-max-rows", this.maxRows);
+    fbButton.setAttribute("data-show-faces", this.friends.toString());
+    fbButton.setAttribute("data-auto-logout-link", this.logoutLink.toString());
+    Polymer.dom(this.$['fb-login-container']).appendChild(fbButton);
+
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: _this2.appid,
+        cookie: _this2.cookie,
+        xfbml: true,
+        version: _this2.version
+      });
+
+      FB.getLoginStatus(function (response) {
+        _this2._statusChangeCallback(response);
+      });
+
+      FB.XFBML.parse(_this2.$['fb-login-container']);
+
+      FB.customCheckLoginState = function () {
+        FB.getLoginStatus(function (response) {
+          _this2._statusChangeCallback(response);
+        });
+      };
+
+      _this2._ready = true;
+      _this2.fire('ready');
+    };
+
+    if (typeof FB == 'undefined') {
+      (function (d, s, id) {
+        var js = undefined,
+            fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = '//connect.facebook.net/' + _this2.language + '/sdk.js#xfbml=1&version=' + _this2.version + '&appId=' + _this2.appid;
+        fjs.parentNode.insertBefore(js, fjs);
+      })(document, 'script', 'facebook-jssdk');
+    }
+  },
+  _statusChangeCallback: function _statusChangeCallback(response) {
+    if (response.status === 'connected') {
+      // Logged into app and Facebook.
+      this.fire('signin-success', {
+        response: response
+      });
+      // User is signed in, we can now initiate an API call if autoApiCall is used
+      if (!this._changeListenerEnabled) {
+        this._changeListenerEnabled = true;
+        this.go();
+      }
+    } else if (response.status === 'not_authorized') {
+      // The person is logged into Facebook, but not into the app.
+      this.fire('signin-not-authorized', {
+        response: response
+      });
+      this.graphResponse = {};
+      this._changeListenerEnabled = false;
+    } else {
+      // The person is not logged into Facebook, so we're not sure if
+      // they are logged into this app or not.
+      this.fire('signin-not-logged-in', {
+        response: response
+      });
+      this.graphResponse = {};
+      this._changeListenerEnabled = false;
+    }
+  },
+  _sendAutoApiRequest: function _sendAutoApiRequest() {
+    if (this.autoApiCall && this._changeListenerEnabled) {
+      // The initial auto api call is sent from the login callback.
+      // Only the ones after that should be sent from the observer
+      this.go();
+    }
+  }
+
+  /**
+   * The `signin-success` event is fired if a user
+   * signs in successfully.
+   *
+   * @event signin-success
+   */
+
+  /**
+   * The `signin-not-authorized` event is fired if a
+   * user is signed into Facebook but not into your app.
+   *
+   * @event signin-not-authorized
+   */
+
+  /**
+   * The `signin-not-logged-in` event is fired if a
+   * user is not signed into facebook.
+   *
+   * @event signin-not-logged-in
+   */
+
+  /**
+   * The `graph-response` event is fired as soon as the response of an API call comes in.
+   *
+   * @event graph-response
+   */
+
+  /**
+   * The `ready` event is fired as soon as the facebook SDK is ready.
+   *
+   * @event ready
+   */
+
+});</script></body></html>

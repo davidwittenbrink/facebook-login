@@ -1,0 +1,22 @@
+{
+  "name": "facebook-login",
+  "version": "0.7.0",
+  "authors": [
+    "David Wittenbrink <david.wittenbrink@gmail.com>"
+  ],
+  "description": "Element that includes the Facebook Login button into your site and enables Graph API calls.",
+  "keywords": ["facebook", "login", "polymer", "web-components"],
+  "main": "dist/facebook-login.html",
+  "license": "MIT",
+  "homepage": "http://davidwittenbrink.github.io/facebook-login",
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.4"
+  },
+  "devDependencies": {
+    "web-component-tester": "*",
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.2"
+  }
+}
