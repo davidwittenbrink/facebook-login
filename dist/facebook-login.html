@@ -7,9 +7,9 @@
       can be used for API calls.
       _Make sure you import the facebook-login.html from
       the dist folder as the other one is written in EcmaScript 6._
-      
+
       ##### Example
-      
+
           <html>
             <head>
               <meta charset="utf-8">
@@ -30,18 +30,18 @@
                     scope="public_profile email user_birthday"
                     graph-response="{{resp}}"
                     auto-api-call></facebook-login>
-                
+
                 <div style="margin-top: 20px">
                   <span>[[resp.name]]</span>
                   <div>[[resp.email]]</div>
                   <div>[[resp.birthday]]</div>
                 </div>
-                
+
               </template>
-            
+
             </body>
           </html>
-      
+
       @element facebook-login
       @demo demo/index.html
       @hero hero.svg
@@ -115,6 +115,30 @@ Polymer({
     },
 
     /**
+     * The size of the button. ['icon', 'small', 'medium', 'large', 'xlarge']
+     */
+    buttonSize: {
+      type: String,
+      value: 'small'
+    },
+
+    /**
+     * Whether to show friends' pictures beneath the button.
+     */
+    friends: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Whether to show friends' pictures beneath the button.
+     */
+    maxRows: {
+      type: String,
+      value: '1'
+    },
+
+    /**
      * The Graph API URL you want to access.
      */
     graphUrl: {
@@ -176,8 +200,7 @@ Polymer({
    *
    * @method go
    */
-  go: function go() {
-    var _this = this;
+  go() {
 
     if (this.graphUrl === '') {
       console.error("No URL specified. Specify the graph API URL using the graphURL attribute.");
@@ -189,69 +212,71 @@ Polymer({
       return;
     }
 
-    FB.api(this.graphUrl, this.graphMethod, this.graphParams, function (response) {
-      _this.graphResponse = response;
-      _this.fire('graph-response', {
+    FB.api(this.graphUrl, this.graphMethod, this.graphParams, response => {
+      this.graphResponse = response;
+      this.fire('graph-response', {
         response: response
       });
     });
   },
 
-  ready: function ready() {
-    var _this2 = this;
+  ready() {
 
     if (!this.appid) {
-      console.error("Missing attribute appID for Facebook Login Button");
+      console.error("Missing attribute appid for Facebook Login Button");
       return;
     }
 
     this._commaDelimittedAppScope = this.scope.split(' ').join(',');
 
-    var fbButton = document.createElement('div');
+    let fbButton = document.createElement('div');
     fbButton.className = "fb-login-button";
     fbButton.setAttribute("onlogin", "FB.customCheckLoginState();");
     fbButton.setAttribute("data-scope", this._commaDelimittedAppScope);
+    fbButton.setAttribute("data-size", this.buttonSize);
+    fbButton.setAttribute("data-max-rows", this.maxRows);
+    fbButton.setAttribute("data-show-faces", this.friends.toString());
     fbButton.setAttribute("data-auto-logout-link", this.logoutLink.toString());
     Polymer.dom(this.$['fb-login-container']).appendChild(fbButton);
 
-    window.fbAsyncInit = function () {
+    window.fbAsyncInit = () => {
       FB.init({
-        appId: _this2.appid,
-        cookie: _this2.cookie,
+        appId: this.appid,
+        cookie: this.cookie,
         xfbml: true,
-        version: _this2.version
+        version: this.version
       });
 
-      FB.getLoginStatus(function (response) {
-        _this2._statusChangeCallback(response);
+      FB.getLoginStatus(response => {
+        this._statusChangeCallback(response);
       });
 
-      FB.XFBML.parse(_this2.$['fb-login-container']);
+      FB.XFBML.parse(this.$['fb-login-container']);
 
-      FB.customCheckLoginState = function () {
-        FB.getLoginStatus(function (response) {
-          _this2._statusChangeCallback(response);
+      FB.customCheckLoginState = () => {
+        FB.getLoginStatus(response => {
+          this._statusChangeCallback(response);
         });
       };
 
-      _this2._ready = true;
-      _this2.fire('ready');
+      this._ready = true;
+      this.fire('ready');
     };
 
     if (typeof FB == 'undefined') {
-      (function (d, s, id) {
-        var js = undefined,
+      ((d, s, id) => {
+        let js,
             fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) return;
         js = d.createElement(s);
         js.id = id;
-        js.src = '//connect.facebook.net/en_US/sdk.js#xfbml=1&version=' + _this2.version + '&appId=' + _this2.appid;
+        js.src = `//connect.facebook.net/${ this.language }/sdk.js#xfbml=1&version=${ this.version }&appId=${ this.appid }`;
         fjs.parentNode.insertBefore(js, fjs);
       })(document, 'script', 'facebook-jssdk');
     }
   },
 
-  _statusChangeCallback: function _statusChangeCallback(response) {
+  _statusChangeCallback(response) {
     if (response.status === 'connected') {
       // Logged into app and Facebook.
       this.fire('signin-success', {
@@ -280,7 +305,7 @@ Polymer({
     }
   },
 
-  _sendAutoApiRequest: function _sendAutoApiRequest() {
+  _sendAutoApiRequest() {
     if (this.autoApiCall && this._changeListenerEnabled) {
       // The initial auto api call is sent from the login callback.
       // Only the ones after that should be sent from the observer

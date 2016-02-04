@@ -10,9 +10,9 @@
       can be used for API calls.
       _Make sure you import the facebook-login.html from
       the dist folder as the other one is written in EcmaScript 6._
-      
+
       ##### Example
-      
+
           <html>
             <head>
               <meta charset="utf-8">
@@ -33,18 +33,18 @@
                     scope="public_profile email user_birthday"
                     graph-response="{{resp}}"
                     auto-api-call></facebook-login>
-                
+
                 <div style="margin-top: 20px">
                   <span>[[resp.name]]</span>
                   <div>[[resp.email]]</div>
                   <div>[[resp.birthday]]</div>
                 </div>
-                
+
               </template>
-            
+
             </body>
           </html>
-      
+
       @element facebook-login
       @demo demo/index.html
       @hero hero.svg
@@ -116,6 +116,30 @@
           scope: {
             type: String,
             value: 'basic_info'
+          },
+
+          /**
+           * The size of the button. ['icon', 'small', 'medium', 'large', 'xlarge']
+           */
+          buttonSize: {
+            type: String,
+            value: 'small'
+          },
+
+          /**
+           * Whether to show friends' pictures beneath the button.
+           */
+          friends: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * Whether to show friends' pictures beneath the button.
+           */
+          maxRows: {
+            type: String,
+            value: '1'
           },
 
           /**
@@ -203,7 +227,7 @@
         ready() {
 
           if (!this.appid) {
-            console.error("Missing attribute appID for Facebook Login Button");
+            console.error("Missing attribute appid for Facebook Login Button");
             return;
           }
 
@@ -213,6 +237,9 @@
           fbButton.className = "fb-login-button";
           fbButton.setAttribute("onlogin", "FB.customCheckLoginState();");
           fbButton.setAttribute("data-scope", this._commaDelimittedAppScope);
+          fbButton.setAttribute("data-size", this.buttonSize);
+          fbButton.setAttribute("data-max-rows", this.maxRows);
+          fbButton.setAttribute("data-show-faces", this.friends.toString());
           fbButton.setAttribute("data-auto-logout-link", this.logoutLink.toString());
           Polymer.dom(this.$['fb-login-container']).appendChild(fbButton);
 
@@ -246,7 +273,7 @@
               if (d.getElementById(id)) return;
               js = d.createElement(s);
               js.id = id;
-              js.src = `//connect.facebook.net/en_US/sdk.js#xfbml=1&version=${this.version}&appId=${this.appid}`;
+              js.src = `//connect.facebook.net/${this.language}/sdk.js#xfbml=1&version=${this.version}&appId=${this.appid}`;
               fjs.parentNode.insertBefore(js, fjs);
             })(document, 'script', 'facebook-jssdk');
           }

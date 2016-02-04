@@ -15,6 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <title>facebook-login Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../dist/facebook-login.html">
+    <link rel="import" href="../../polymer/polymer.html">
   </head>
   <body unresolved>
 
@@ -23,8 +24,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template is="dom-bind">
 
     <facebook-login
-        appID="373038132822841"
-        logout-link graph-url="me?fields=name,email,birthday"
+        appid="373038132822841"
+        button-size="large"
+        friends
+        logout-link
+        graph-url="me?fields=first_name,last_name,email,picture.type(normal)"
         scope="public_profile email user_birthday"
         graph-response="{{resp}}"
         auto-api-call></facebook-login>
@@ -32,14 +36,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template is="dom-if" if="{{!resp.name}}">
       <div>Sign into your Facebook account to see your info!</div>
     </template>
-    
+
     <div style="margin-top: 20px">
       <span>[[resp.name]]</span>
       <div>[[resp.email]]</div>
       <div>[[resp.birthday]]</div>
     </div>
-    
+
   </template>
-  
+
 </body>
 </html>
