@@ -40,5 +40,8 @@
     "gulp-vulcanize": "^6.1.0",
     "path": "^0.12.7",
     "run-sequence": "^1.1.5"
+  },
+  "dependencies": {
+    "babel-preset-es2015": "^6.3.13"
   }
 }

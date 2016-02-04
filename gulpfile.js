@@ -39,7 +39,9 @@ gulp.task('crisper', function () {
 
 gulp.task('babel', function () {
   return gulp.src('dist/facebook-login.js')
-    .pipe(babel())
+    .pipe(babel({
+      presets: ['es2015']
+    }))
     .pipe(gulp.dest('dist'));
 });
 
